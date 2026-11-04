@@ -1,53 +1,32 @@
 
-import mongoose from "mongoose";
+import { DataTypes } from 'sequelize';
+import sequelize from '../sequelize.js';
 
-const embeddedLoanSchema = new mongoose.Schema(
+const Member = sequelize.define(
+  'Member',
   {
-    book: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Book",
-      required: true,
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
-    borrowedAt: {
-      type: Date,
-      default: Date.now,
-    },
-    returnedAt: {
-      type: Date,
-      default: null,
-    },
-  },
-  { _id: true }
-);
-
-const memberSchema = new mongoose.Schema(
-  {
     name: {
-      type: String,
-      required: [true, "Member name is required"],
-      trim: true,
-      minlength: [2, "Member name must be at least 2 characters"],
-      maxlength: [100, "Member name cannot exceed 100 characters"],
+      type: DataTypes.STRING(100),
+      allowNull: false
     },
     email: {
-      type: String,
-      required: [true, "Member email is required"],
+      type: DataTypes.STRING(255),
+      allowNull: false,
       unique: true,
-      lowercase: true,
-      trim: true,
-      match: [
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        "Please provide a valid email address",
-      ],
-    },
-    recentLoans: {
-      type: [embeddedLoanSchema],
-      default: [],
-    },
+      validate: {
+        isEmail: true
+      }
+    }
   },
-  { timestamps: true }
+  {
+    tableName: 'members',
+    timestamps: false
+  }
 );
-
-const Member = mongoose.model("Member", memberSchema);
 
 export default Member;
