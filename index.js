@@ -18,23 +18,18 @@ const PORT = process.env.PORT || 3000;
 // ERROR HANDLING
 // --------------------
 
-function sendError(res, error) {
-  console.error('Application error:', error);
+function sendError(res, error, feature) {
+  console.error(error);
 
-  Sentry.captureException(error);
+  reportError(error, feature);
 
   if (
     error.name === 'SequelizeValidationError' ||
-    error.name === 'SequelizeUniqueConstraintError'
+    error.name === 'SequelizeUniqueConstraintError' ||
+    error.name === 'SequelizeForeignKeyConstraintError'
   ) {
     return res.status(400).json({
       error: error.message
-    });
-  }
-
-  if (error.name === 'SequelizeForeignKeyConstraintError') {
-    return res.status(400).json({
-      error: 'Related record does not exist'
     });
   }
 

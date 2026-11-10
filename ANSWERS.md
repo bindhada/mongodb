@@ -84,3 +84,9 @@ The errors did not reach Sentry's error handler because the try/catch blocks cau
 Question: Several requests failed for the same reason. Did Sentry show them as separate issues, or group them? Why is that useful?
 
 Sentry grouped errors with the same underlying cause into one issue. This is useful because it prevents the dashboard from becoming cluttered with duplicate errors and makes it easier to identify and fix the main problem.
+
+Exercise 6: One helper instead of copy-paste
+
+Question: You now send each error to Sentry. What does each tool give you that the other doesn't?
+
+Sentry provides error monitoring, stack traces, error grouping, breadcrumbs and alerts. It helps developers identify and investigate problems in the application. Logging provides information about what happens while the application runs, including messages and events that may not be errors. Both tools help developers understand and troubleshoot problems.
