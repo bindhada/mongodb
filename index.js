@@ -1,4 +1,5 @@
 
+import { reportError } from './utils/reportError.js';
 import './instrument.js';
 
 import 'dotenv/config';
@@ -18,7 +19,7 @@ const PORT = process.env.PORT || 3000;
 // --------------------
 
 function sendError(res, error) {
-  console.error(error);
+  console.error('Application error:', error);
 
   Sentry.captureException(error);
 
@@ -58,7 +59,16 @@ if (process.env.NODE_ENV !== 'production') {
 
 // GET /books?page=1&limit=10&genre=fantasy
 app.get('/books', async (req, res) => {
+  
+  Sentry.addBreadcrumb({
+    message: 'Fetch books route',
+    level: 'info',
+  });
+
+  Sentry.setTag('feature', 'books');
+
   try {
+    throw new Error('Testing books breadcrumbs and tags');
     const page = Number(req.query.page ?? 1);
     const limit = Number(req.query.limit ?? 10);
 
