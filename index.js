@@ -1,9 +1,9 @@
+
 import './instrument.js';
 
 import 'dotenv/config';
 import express from 'express';
 import * as Sentry from '@sentry/node';
-import { Op } from 'sequelize';
 
 import sequelize from './sequelize.js';
 import { Book, Author, Member, Loan } from './models/index.js';
@@ -40,7 +40,9 @@ function sendError(res, error) {
   });
 }
 
+// --------------------
 // SENTRY DEBUG ROUTE
+// --------------------
 
 if (process.env.NODE_ENV !== 'production') {
   app.get('/debug-sentry', (req, res) => {
@@ -413,10 +415,16 @@ app.use((req, res) => {
   });
 });
 
+// --------------------
 // SENTRY ERROR HANDLER
+// --------------------
+
 Sentry.setupExpressErrorHandler(app);
 
-// Invalid JSON handler
+// --------------------
+// INVALID JSON HANDLER
+// --------------------
+
 app.use((error, req, res, next) => {
   if (error instanceof SyntaxError && 'body' in error) {
     return res.status(400).json({
