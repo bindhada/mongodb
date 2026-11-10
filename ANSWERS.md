@@ -90,3 +90,13 @@ Exercise 6: One helper instead of copy-paste
 Question: You now send each error to Sentry. What does each tool give you that the other doesn't?
 
 Sentry provides error monitoring, stack traces, error grouping, breadcrumbs and alerts. It helps developers identify and investigate problems in the application. Logging provides information about what happens while the application runs, including messages and events that may not be errors. Both tools help developers understand and troubleshoot problems.
+
+Exercise 7: Not every error belongs in Sentry
+
+Question: Why is it a problem if Sentry fills up with errors that aren't bugs?
+
+If Sentry fills up with errors caused by invalid user input, developers may receive too many alerts and miss genuine application problems. This creates unnecessary noise and makes important bugs harder to identify.
+
+Question: Name one other kind of error that shouldn't go to Sentry, and one that always should.
+
+An incorrect password entered by a user should not normally be reported as an application bug. A database connection failure should be sent to Sentry because it indicates a genuine server-side problem.

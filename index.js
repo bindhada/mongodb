@@ -1,4 +1,4 @@
-
+import { z, ZodError } from 'zod';
 import { reportError } from './utils/reportError.js';
 import './instrument.js';
 
@@ -13,6 +13,14 @@ const app = express();
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
+
+// EXERCISE 7: ZOD SCHEMA
+const bookSchema = z.object({
+  title: z.string().min(1),
+  genre: z.string().min(1),
+  published_year: z.number().int(),
+  author_id: z.number().int().positive().optional()
+});
 
 // --------------------
 // ERROR HANDLING
@@ -133,13 +141,15 @@ app.get('/books', async (req, res) => {
 // POST /books
 app.post('/books', async (req, res) => {
   try {
+    // Validate request body with Zod
     const {
       title,
       genre,
       published_year,
       author_id
-    } = req.body;
+    } = bookSchema.parse(req.body);
 
+    // Check if author exists
     if (author_id != null) {
       const author = await Author.findByPk(author_id);
 
@@ -150,6 +160,7 @@ app.post('/books', async (req, res) => {
       }
     }
 
+    // Create book
     const book = await Book.create({
       title,
       genre,
@@ -158,8 +169,23 @@ app.post('/books', async (req, res) => {
     });
 
     return res.status(201).json(book);
+
   } catch (error) {
-    return sendError(res, error);
+
+    // Zod validation errors should NOT go to Sentry
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        error: 'Invalid book data',
+        details: error.issues
+      });
+    }
+
+    // Genuine server errors go to Sentry
+    reportError(error, 'books');
+
+    return res.status(500).json({
+      error: 'Internal server error'
+    });
   }
 });
 
