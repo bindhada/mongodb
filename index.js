@@ -1,6 +1,8 @@
+import './instrument.js';
 
 import 'dotenv/config';
 import express from 'express';
+import * as Sentry from '@sentry/node';
 import { Op } from 'sequelize';
 
 import sequelize from './sequelize.js';
@@ -35,6 +37,14 @@ function sendError(res, error) {
 
   return res.status(500).json({
     error: 'Internal server error'
+  });
+}
+
+// SENTRY DEBUG ROUTE
+
+if (process.env.NODE_ENV !== 'production') {
+  app.get('/debug-sentry', (req, res) => {
+    throw new Error('My first Sentry error!');
   });
 }
 
@@ -402,6 +412,9 @@ app.use((req, res) => {
     error: 'Route not found'
   });
 });
+
+// SENTRY ERROR HANDLER
+Sentry.setupExpressErrorHandler(app);
 
 // Invalid JSON handler
 app.use((error, req, res, next) => {

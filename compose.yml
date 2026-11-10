@@ -22,5 +22,19 @@ services:
     depends_on:
       - mongodb
 
+  postgres:
+    image: postgres:16
+    container_name: library-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: library
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
 volumes:
   mongodb_data:
+  postgres_data:

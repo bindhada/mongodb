@@ -51,3 +51,20 @@ The loan date belongs in the loans table because it describes the relationship b
 A member can borrow many books, and a book can be borrowed by many different members over time. Each borrowing event can have a different loan date and return date.
 
 If the date were stored in the books or members table, it would be difficult to keep track of multiple borrowing events. The loans table solves this problem by storing each borrowing event separately.
+
+Week 11 – Catching Bugs in Production with Sentry
+Exercise 1: Install the alarm system
+
+Question: Why must instrument.js be imported before everything else?
+
+Sentry must be initialized before Express and other application modules are loaded so it can monitor the application and capture errors correctly.
+
+Question: Why do we keep the DSN in .env instead of in the code?
+
+We keep the DSN in the .env file to separate configuration from source code. This makes it easier to manage different environments and prevents accidentally exposing configuration in the repository.
+
+Exercise 2: Your first error report
+
+Question: You didn't add any extra information to this error yourself. List everything Sentry recorded anyway.
+
+Sentry automatically recorded the error message, exception type, stack trace, file name, line number, timestamp, Node.js version, operating system, environment, and available request information.
