@@ -68,3 +68,19 @@ Exercise 2: Your first error report
 Question: You didn't add any extra information to this error yourself. List everything Sentry recorded anyway.
 
 Sentry automatically recorded the error message, exception type, stack trace, file name, line number, timestamp, Node.js version, operating system, environment, and available request information.
+
+Exercise 3: Order matters
+
+Question: What happened when the handler was above the routes, and why?
+
+When the Sentry error handler was placed above the routes, it could not catch errors from routes registered afterward. This is because Express processes middleware in the order it is registered. When I moved the Sentry handler below all the routes, it could capture errors correctly.
+
+Exercise 4: Catch the errors you already catch
+
+Question: Why didn't the errors inside your try/catch reach setupExpressErrorHandler by themselves?
+
+The errors did not reach Sentry's error handler because the try/catch blocks caught the errors themselves. After catching an error, my application sent an HTTP response using sendError(). The errors never reached the Sentry middleware, so I had to use Sentry.captureException(error) to send them manually.
+
+Question: Several requests failed for the same reason. Did Sentry show them as separate issues, or group them? Why is that useful?
+
+Sentry grouped errors with the same underlying cause into one issue. This is useful because it prevents the dashboard from becoming cluttered with duplicate errors and makes it easier to identify and fix the main problem.

@@ -20,6 +20,8 @@ const PORT = process.env.PORT || 3000;
 function sendError(res, error) {
   console.error(error);
 
+  Sentry.captureException(error);
+
   if (
     error.name === 'SequelizeValidationError' ||
     error.name === 'SequelizeUniqueConstraintError'
