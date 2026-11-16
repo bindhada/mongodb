@@ -456,18 +456,3 @@ if (
 ) {
   await startServer();
 }
-
-function unusedFunction() {
-  const unusedVariable = 123;
-  return unusedVariable;
-}
-
-export function qualityGateDemo(value) {
-    if (value > 10) {
-        return "high";
-    } else if (value > 5) {
-        return "medium";
-    } else {
-        return "low";
-    }
-}
