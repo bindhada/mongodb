@@ -35,6 +35,16 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  sonarqube:
+    image: sonarqube
+    container_name: sonarqube-week11
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+
 volumes:
   mongodb_data:
   postgres_data:
+  sonarqube_data:

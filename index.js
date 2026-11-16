@@ -1,3 +1,4 @@
+
 import { z, ZodError } from 'zod';
 import { reportError } from './utils/reportError.js';
 import './instrument.js';
@@ -5,6 +6,7 @@ import './instrument.js';
 import 'dotenv/config';
 import express from 'express';
 import * as Sentry from '@sentry/node';
+import { pathToFileURL } from 'node:url';
 
 import sequelize from './sequelize.js';
 import { Book, Author, Member, Loan } from './models/index.js';
@@ -14,7 +16,6 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-// EXERCISE 7: ZOD SCHEMA
 const bookSchema = z.object({
   title: z.string().min(1),
   genre: z.string().min(1),
@@ -22,13 +23,8 @@ const bookSchema = z.object({
   author_id: z.number().int().positive().optional()
 });
 
-// --------------------
-// ERROR HANDLING
-// --------------------
-
 function sendError(res, error, feature) {
   console.error(error);
-
   reportError(error, feature);
 
   if (
@@ -46,32 +42,23 @@ function sendError(res, error, feature) {
   });
 }
 
-// --------------------
-// SENTRY DEBUG ROUTE
-// --------------------
-
+// Sentry debug route
 if (process.env.NODE_ENV !== 'production') {
   app.get('/debug-sentry', (req, res) => {
     throw new Error('My first Sentry error!');
   });
 }
 
-// --------------------
-// BOOK ROUTES
-// --------------------
-
-// GET /books?page=1&limit=10&genre=fantasy
+// GET /books
 app.get('/books', async (req, res) => {
-  
   Sentry.addBreadcrumb({
     message: 'Fetch books route',
-    level: 'info',
+    level: 'info'
   });
 
   Sentry.setTag('feature', 'books');
 
   try {
-    throw new Error('Testing books breadcrumbs and tags');
     const page = Number(req.query.page ?? 1);
     const limit = Number(req.query.limit ?? 10);
 
@@ -134,14 +121,13 @@ app.get('/books', async (req, res) => {
       data: result.rows
     });
   } catch (error) {
-    return sendError(res, error);
+    return sendError(res, error, 'books');
   }
 });
 
 // POST /books
 app.post('/books', async (req, res) => {
   try {
-    // Validate request body with Zod
     const {
       title,
       genre,
@@ -149,7 +135,6 @@ app.post('/books', async (req, res) => {
       author_id
     } = bookSchema.parse(req.body);
 
-    // Check if author exists
     if (author_id != null) {
       const author = await Author.findByPk(author_id);
 
@@ -160,7 +145,6 @@ app.post('/books', async (req, res) => {
       }
     }
 
-    // Create book
     const book = await Book.create({
       title,
       genre,
@@ -169,10 +153,7 @@ app.post('/books', async (req, res) => {
     });
 
     return res.status(201).json(book);
-
   } catch (error) {
-
-    // Zod validation errors should NOT go to Sentry
     if (error instanceof ZodError) {
       return res.status(400).json({
         error: 'Invalid book data',
@@ -180,7 +161,6 @@ app.post('/books', async (req, res) => {
       });
     }
 
-    // Genuine server errors go to Sentry
     reportError(error, 'books');
 
     return res.status(500).json({
@@ -207,7 +187,7 @@ app.get('/books/:id', async (req, res) => {
 
     return res.json(book);
   } catch (error) {
-    return sendError(res, error);
+    return sendError(res, error, 'books');
   }
 });
 
@@ -239,7 +219,7 @@ app.put('/books/:id', async (req, res) => {
 
     return res.json(book);
   } catch (error) {
-    return sendError(res, error);
+    return sendError(res, error, 'books');
   }
 });
 
@@ -261,14 +241,11 @@ app.delete('/books/:id', async (req, res) => {
       book
     });
   } catch (error) {
-    return sendError(res, error);
+    return sendError(res, error, 'books');
   }
 });
 
-// --------------------
-// AUTHOR ROUTES
-// --------------------
-
+// POST /authors
 app.post('/authors', async (req, res) => {
   try {
     const author = await Author.create({
@@ -277,10 +254,11 @@ app.post('/authors', async (req, res) => {
 
     return res.status(201).json(author);
   } catch (error) {
-    return sendError(res, error);
+    return sendError(res, error, 'authors');
   }
 });
 
+// GET /authors
 app.get('/authors', async (req, res) => {
   try {
     const authors = await Author.findAll({
@@ -289,7 +267,7 @@ app.get('/authors', async (req, res) => {
 
     return res.json(authors);
   } catch (error) {
-    return sendError(res, error);
+    return sendError(res, error, 'authors');
   }
 });
 
@@ -310,14 +288,11 @@ app.get('/authors/:id/books', async (req, res) => {
 
     return res.json(author);
   } catch (error) {
-    return sendError(res, error);
+    return sendError(res, error, 'authors');
   }
 });
 
-// --------------------
-// MEMBER ROUTES
-// --------------------
-
+// POST /members
 app.post('/members', async (req, res) => {
   try {
     const member = await Member.create({
@@ -327,10 +302,11 @@ app.post('/members', async (req, res) => {
 
     return res.status(201).json(member);
   } catch (error) {
-    return sendError(res, error);
+    return sendError(res, error, 'members');
   }
 });
 
+// GET /members
 app.get('/members', async (req, res) => {
   try {
     const members = await Member.findAll({
@@ -339,13 +315,9 @@ app.get('/members', async (req, res) => {
 
     return res.json(members);
   } catch (error) {
-    return sendError(res, error);
+    return sendError(res, error, 'members');
   }
 });
-
-// --------------------
-// LOAN ROUTES
-// --------------------
 
 // POST /loans
 app.post('/loans', async (req, res) => {
@@ -391,7 +363,7 @@ app.post('/loans', async (req, res) => {
 
     return res.status(201).json(loan);
   } catch (error) {
-    return sendError(res, error);
+    return sendError(res, error, 'loans');
   }
 });
 
@@ -415,7 +387,7 @@ app.get('/members/:id/loans', async (req, res) => {
 
     return res.json(member);
   } catch (error) {
-    return sendError(res, error);
+    return sendError(res, error, 'loans');
   }
 });
 
@@ -434,30 +406,21 @@ app.get('/loans/active', async (req, res) => {
 
     return res.json(loans);
   } catch (error) {
-    return sendError(res, error);
+    return sendError(res, error, 'loans');
   }
 });
 
-// --------------------
-// UNKNOWN ROUTES
-// --------------------
-
+// Unknown routes
 app.use((req, res) => {
   return res.status(404).json({
     error: 'Route not found'
   });
 });
 
-// --------------------
-// SENTRY ERROR HANDLER
-// --------------------
-
+// Sentry error handler
 Sentry.setupExpressErrorHandler(app);
 
-// --------------------
-// INVALID JSON HANDLER
-// --------------------
-
+// Invalid JSON handler
 app.use((error, req, res, next) => {
   if (error instanceof SyntaxError && 'body' in error) {
     return res.status(400).json({
@@ -470,9 +433,7 @@ app.use((error, req, res, next) => {
   });
 });
 
-// --------------------
-// START SERVER
-// --------------------
+export { app };
 
 async function startServer() {
   try {
@@ -484,13 +445,29 @@ async function startServer() {
       console.log(`Library API listening on port ${PORT}`);
     });
   } catch (error) {
-    console.error(
-      'Unable to connect to the database:',
-      error
-    );
-
+    console.error('Unable to connect to the database:', error);
     process.exitCode = 1;
   }
 }
 
-startServer();
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
+  await startServer();
+}
+
+function unusedFunction() {
+  const unusedVariable = 123;
+  return unusedVariable;
+}
+
+export function qualityGateDemo(value) {
+    if (value > 10) {
+        return "high";
+    } else if (value > 5) {
+        return "medium";
+    } else {
+        return "low";
+    }
+}

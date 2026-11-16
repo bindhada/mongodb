@@ -1,4 +1,7 @@
 node_modules/
 .env
+coverage/
+dist/
+.scannerwork/
 npm-debug.log*
 .DS_Store

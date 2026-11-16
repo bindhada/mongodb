@@ -1,3 +1,4 @@
+
 import * as Sentry from '@sentry/node';
 
 export function reportError(error, feature) {
