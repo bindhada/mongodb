@@ -1,0 +1,236 @@
+{
+  "name": "My first agent",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {
+          "responseMode": "lastNode"
+        }
+      },
+      "id": "c51700bf-1648-4faf-8461-f36c93636b5c",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "b6c4f50d-5f7a-45a6-9a0b-5f07e0d9d002"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.chatInput }}",
+        "options": {
+          "systemMessage": "# Role\nYou are a personal weather, air-quality, and outdoor activity assistant for Ho Chi Minh City, Vietnam.\n\n# Task\nHelp the user decide what to wear, whether to bring an umbrella, and whether it is a good time to exercise outdoors.\n\n# Tools\n- Use **Get weather** to retrieve current weather conditions and temperature.\n- Use **Get air quality** to retrieve the current European AQI, PM2.5, and PM10 levels.\n- Always use the relevant tool when the user asks for current weather or air quality.\n- Never invent weather or air-quality measurements.\n\n# Rules\n- Give temperatures in Celsius.\n- Explain air-quality levels in simple language.\n- Give practical advice based on the returned data.\n- If a tool fails, explain that current data is unavailable.\n- Consider sensitive groups when discussing outdoor exercise.\n- Do not claim to have checked a tool unless it was actually used.\n\n# Response format\n1. Current conditions\n2. Weather and air-quality measurements\n3. Practical recommendations\n4. Short conclusion\n\nBe friendly, clear, and concise."
+        }
+      },
+      "id": "e9e9a2c5-0c8e-4bf1-a165-5f44a6db8609",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "model": "=openrouter/free",
+        "options": {}
+      },
+      "id": "0ce1fef4-2d0c-482c-877c-2138850bab57",
+      "name": "OpenRouter Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        288,
+        240
+      ],
+      "credentials": {
+        "openRouterApi": {
+          "id": "6g6jbUplhqQfmejL",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "dfe19171-94a0-4bb9-a51c-cec85f971ce5",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        400,
+        240
+      ]
+    },
+    {
+      "parameters": {
+        "cityName": "Ho Chi Minh City,VN"
+      },
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1.1,
+      "position": [
+        544,
+        240
+      ],
+      "id": "178601a1-c23a-4a6b-93cc-9a6402117882",
+      "name": "Get weather",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "2hbddMceuk4t9kPY",
+          "name": "OpenWeatherMap account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Get current air quality in Ho Chi Minh City, including European AQI, PM2.5 and PM10. Use this when the user asks about pollution or whether it is safe to spend time outdoors.",
+        "url": "=https://air-quality-api.open-meteo.com/v1/air-quality?latitude=10.82&longitude=106.63&current=european_aqi,pm2_5,pm10&timezone=Asia%2FHo_Chi_Minh",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [
+        672,
+        240
+      ],
+      "id": "d39c1549-5ab8-4f43-8c74-377b3b969529",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Retrieve all books from the Express Library API using GET /books.",
+        "url": "http://host.docker.internal:3000/books",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [
+        800,
+        240
+      ],
+      "id": "0ef15fa2-3750-401d-ab0a-487a429dee51",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Create a new book in the Express Library API.",
+        "method": "POST",
+        "url": "http://host.docker.internal:3000/books",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"title\": \"Test Book\",\n  \"genre\": \"Technology\",\n  \"published_year\": 2024\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [
+        800,
+        96
+      ],
+      "id": "c5662d02-4f91-4fef-9cd7-a24bd2fa890e",
+      "name": "HTTP Request2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "Get weather": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "9cdea1be-13e9-44aa-a967-c87a582c18fb",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3b07bb9cda2730c71ebef03ef97ad85c291a72ea0ef23ec93a8a94e73a13adec"
+  },
+  "nodeGroups": [],
+  "id": "lrhqv2HKS0ke4rrp",
+  "tags": []
+}
