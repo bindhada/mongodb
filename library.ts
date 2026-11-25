@@ -44,3 +44,6 @@ export const checkOutBook = (book: any): number => {
 
   return loanId;
 };
+
+// Intentional TypeScript error for Exercise 4
+const copies: number = "three";
