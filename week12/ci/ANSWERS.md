@@ -102,3 +102,16 @@ A pull request allows CI to detect problems before code enters the main developm
 4. CI uses `npm ci` because it provides consistent, reproducible installations and helps detect problems with the lockfile.
 
 **Results:** Local typechecking passed, all 27 tests passed across 5 test files, and GitHub Actions passed on Node.js 22, 24, and 26.
+
+## Exercise 7 – Fix the Broken Workflow
+
+The four bugs were:
+
+1. The workflow targeted `master` instead of `week12/ci`.
+2. The Node.js matrix variable used `matrix.node` instead of `matrix.node-version`.
+3. The workflow was missing the checkout step.
+4. Dependencies were not installed before running the tests.
+
+**Which bug was the most dangerous, and why?**
+
+The incorrect branch filter was the most dangerous because the workflow did not run for pull requests targeting `week12/ci`. This could give a false impression that the code had passed CI when the broken workflow had not actually run.
