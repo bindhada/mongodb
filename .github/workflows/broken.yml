@@ -2,7 +2,7 @@ name: Broken CI
 
 on:
   pull_request:
-    branches: ["master"]
+    branches: ["week12/ci"]
 
 jobs:
   test:
