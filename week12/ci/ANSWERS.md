@@ -160,3 +160,23 @@ The push event started a new workflow run after the fix was pushed to the pull r
 
 A pull request allows CI to detect problems before code enters the main development branch. This prevents broken code from being merged and gives the developer a chance to fix it first.
 
+
+
+\## Exercise 4 – TypeScript Typechecking
+
+
+
+1\. `tsc --noEmit` runs the TypeScript compiler and checks for type errors without generating JavaScript files.
+
+
+
+2\. Typechecking before tests catches TypeScript errors early, preventing invalid code from continuing through the CI pipeline.
+
+
+
+3\. TypeScript can catch possible null errors when strict null checks are enabled and the types indicate a value might be null.
+
+
+
+4\. CI detected the intentional type error when a string was assigned to a number variable. After removing the error, both Node.js jobs passed.
+
