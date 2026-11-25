@@ -124,3 +124,39 @@ Different environments can have different operating systems, Node.js versions, d
 
 \*\*Results:\*\* All 26 tests passed across 4 test files.
 
+
+
+\## Exercise 3 – Intentionally failing test
+
+
+
+\*\*1. What happened when the failing test was pushed?\*\*
+
+
+
+GitHub Actions detected the failing test and marked the CI jobs as failed. The test expected 1 to equal 2, which caused the workflow to turn red.
+
+
+
+\*\*2. What happened after fixing the test?\*\*
+
+
+
+After changing the expectation to 1 to equal 1 and pushing the fix, GitHub Actions ran again and both jobs passed.
+
+
+
+\*\*3. Which event started the new CI run?\*\*
+
+
+
+The push event started a new workflow run after the fix was pushed to the pull request branch.
+
+
+
+\*\*4. Why is it better to catch a failing test in a pull request rather than after merging?\*\*
+
+
+
+A pull request allows CI to detect problems before code enters the main development branch. This prevents broken code from being merged and gives the developer a chance to fix it first.
+
