@@ -1,5 +1,5 @@
-import { z, ZodError } from 'zod';
-import { reportError } from './utils/reportError.js';
+import { z } from 'zod';
+import { reportError, shouldReport } from './utils/reportError.js';
 import './instrument.js';
 
 import 'dotenv/config';
@@ -173,7 +173,7 @@ app.post('/books', async (req, res) => {
   } catch (error) {
 
     // Zod validation errors should NOT go to Sentry
-    if (error instanceof ZodError) {
+    if (!shouldReport(error)) {
       return res.status(400).json({
         error: 'Invalid book data',
         details: error.issues
