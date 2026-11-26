@@ -5,6 +5,7 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       thresholds: {
+        perFile: true,
         lines: 80,
         functions: 80,
         branches: 80,

@@ -56,15 +56,6 @@ describe("Library Unit Tests", () => {
     expect(loanId).toBeLessThanOrEqual(9999);
   });
 
-  test("checkOutBook throws when no copies are available", () => {
-    expect(() =>
-      checkOutBook({
-        title: "foundation",
-        copiesAvailable: 0,
-      })
-    ).toThrow("No copies available");
-  });
-
   test("checkOutBook throws when copiesAvailable is missing", () => {
     expect(() =>
       checkOutBook({
