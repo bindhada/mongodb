@@ -1,30 +1,37 @@
 
-import mongoose from "mongoose";
+import { DataTypes } from 'sequelize';
+import sequelize from '../sequelize.js';
 
-const loanSchema = new mongoose.Schema(
+const Loan = sequelize.define(
+  'Loan',
   {
-    book: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Book",
-      required: [true, "Book is required"],
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
-    member: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Member",
-      required: [true, "Member is required"],
+    book_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
-    borrowedAt: {
-      type: Date,
-      default: Date.now,
+    member_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
-    returnedAt: {
-      type: Date,
-      default: null,
+    loan_date: {
+      type: DataTypes.DATEONLY,
+      allowNull: false
     },
+    returned_at: {
+      type: DataTypes.DATEONLY,
+      allowNull: true,
+      field: 'return_date'
+    }
   },
-  { timestamps: true }
+  {
+    tableName: 'loans',
+    timestamps: false
+  }
 );
-
-const Loan = mongoose.model("Loan", loanSchema);
 
 export default Loan;

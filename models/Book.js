@@ -1,44 +1,36 @@
 
-import mongoose from "mongoose";
+import { DataTypes } from 'sequelize';
+import sequelize from '../sequelize.js';
 
-const bookSchema = new mongoose.Schema(
+const Book = sequelize.define(
+  'Book',
   {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
     title: {
-      type: String,
-      required: [true, "Book title is required"],
-      trim: true,
-      minlength: [1, "Book title cannot be empty"],
-      maxlength: [200, "Book title cannot exceed 200 characters"],
+      type: DataTypes.STRING(100),
+      allowNull: false
     },
     genre: {
-      type: String,
-      required: [true, "Book genre is required"],
-      lowercase: true,
-      trim: true,
-      enum: {
-        values: ["fantasy", "dystopian", "children", "classic"],
-        message: "Genre must be fantasy, dystopian, children, or classic",
-      },
+      type: DataTypes.STRING(50),
+      allowNull: true
     },
-    publishedYear: {
-      type: Number,
-      required: [true, "Published year is required"],
-      min: [0, "Published year cannot be negative"],
-      max: [2100, "Published year cannot exceed 2100"],
-      validate: {
-        validator: Number.isInteger,
-        message: "Published year must be a whole number",
-      },
+    published_year: {
+      type: DataTypes.INTEGER,
+      allowNull: false
     },
-    author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Author",
-      default: null,
-    },
+    author_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    }
   },
-  { timestamps: true }
+  {
+    tableName: 'books',
+    timestamps: false
+  }
 );
-
-const Book = mongoose.model("Book", bookSchema);
 
 export default Book;

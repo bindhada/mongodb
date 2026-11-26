@@ -1,19 +1,24 @@
 
-import mongoose from "mongoose";
+import { DataTypes } from 'sequelize';
+import sequelize from '../sequelize.js';
 
-const authorSchema = new mongoose.Schema(
+const Author = sequelize.define(
+  'Author',
   {
-    name: {
-      type: String,
-      required: [true, "Author name is required"],
-      trim: true,
-      minlength: [2, "Author name must be at least 2 characters"],
-      maxlength: [100, "Author name cannot exceed 100 characters"],
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
     },
+    name: {
+      type: DataTypes.STRING(50),
+      allowNull: false
+    }
   },
-  { timestamps: true }
+  {
+    tableName: 'authors',
+    timestamps: false
+  }
 );
-
-const Author = mongoose.model("Author", authorSchema);
 
 export default Author;

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
     "start": "node index.js",
     "dev": "node --watch index.js"
   },
@@ -13,11 +13,17 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-    "dotenv": "^18.0.8",
+    "@sentry/node": "^11.11.0",
+    "dotenv": "^18.0.9",
     "express": "^5.3.0",
-    "mongoose": "^9.11.2"
+    "mongoose": "^9.11.2",
+    "pg": "^8.23.1",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.37.8",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "vitest": "^5.1.2"
   }
 }
