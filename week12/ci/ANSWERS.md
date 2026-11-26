@@ -115,3 +115,34 @@ The four bugs were:
 **Which bug was the most dangerous, and why?**
 
 The incorrect branch filter was the most dangerous because the workflow did not run for pull requests targeting `week12/ci`. This could give a false impression that the code had passed CI when the broken workflow had not actually run.
+
+## Exercise 8 - Code Coverage
+
+### What does code coverage tell you?
+
+Code coverage tells me how much of my code is executed when my tests run. It helps identify parts of the application that are not tested and shows where additional tests may be needed.
+
+### What is the difference between line, function, branch and statement coverage?
+
+- **Line coverage:** Measures how many lines of code are executed.
+- **Function coverage:** Measures how many functions are called during tests.
+- **Branch coverage:** Measures whether different decision paths, such as if/else conditions, are tested.
+- **Statement coverage:** Measures how many individual statements are executed.
+
+### What happened when you removed a test?
+
+When I removed the test for `checkOutBook` throwing an error when no copies were available, the coverage thresholds failed. This showed that the missing test reduced coverage below the required threshold.
+
+After restoring the test, all 27 tests passed and coverage returned to 100%.
+
+### Why are coverage thresholds useful?
+
+Coverage thresholds prevent code coverage from dropping below an agreed minimum. They encourage developers to write tests for important functionality and help detect missing tests before changes are merged.
+
+## Exercise 9 - CI for your Sentry API
+
+### What does Sentry do without a DSN? If CI did need the DSN, where would it go?
+
+Without a DSN, Sentry cannot send error events to my Sentry project. The application and unit tests can still run because I mock the Sentry functions in Vitest.
+
+If CI needed the DSN, I would store it as an encrypted GitHub Actions repository secret named `SENTRY_DSN` and reference it in the workflow using `${{ secrets.SENTRY_DSN }}`. I would never commit the DSN to the repository.
